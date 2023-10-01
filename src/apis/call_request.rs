@@ -1,4 +1,4 @@
-use crate::models::general::llm::{ Message };
+use crate::models::general::llm::{ Message, ChatCompletion };
 use dotenv::dotenv;
 use reqwest::Client;
 use std::env;
@@ -6,7 +6,7 @@ use std::env;
 use reqwest::header::{ HeaderMap, HeaderValue };
 
 //Call Large Language Model (i.e. GPT-4)
-pub async fn call_gpt(message: Vec<Message>) {
+pub async fn call_gpt(messages: Vec<Message>) {
     dotenv().ok();
 
     // Extract API Ket Information
@@ -30,4 +30,22 @@ pub async fn call_gpt(message: Vec<Message>) {
         .default_headers(headers)
         .build()
         .unwrap();
+    
+    // Create chat completion
+    let chat_completion = ChatCompletion {
+       model: "gpt-4".to_string(),
+       messages,
+       temperature: 0.1
+    };
+
+
+    // troubleshooting
+    let res_raw = client
+        .post(url)
+        .json(&chat_completion)
+        .send()
+        .await
+        .unwrap();
+
+    dbg!(res_raw.text().await.unwrap());
 }
