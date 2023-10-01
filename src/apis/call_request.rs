@@ -14,7 +14,7 @@ pub async fn call_gpt(messages: Vec<Message>) {
     let api_org: String = env::var("OPEN_AI_ORG").expect("OPEN_AI_ORG not found in env vars");
 
     // Confirm endpoint
-    let url: &str = "https://api.openai.com/v1/completions";
+    let url: &str = "https://api.openai.com/v1/chat/completions";
 
     // Create Headers
     let mut headers = HeaderMap::new();
@@ -34,7 +34,7 @@ pub async fn call_gpt(messages: Vec<Message>) {
     // Create chat completion
     let chat_completion = ChatCompletion {
        model: "gpt-4".to_string(),
-       messages,
+       messages: messages,
        temperature: 0.1
     };
 
@@ -48,4 +48,22 @@ pub async fn call_gpt(messages: Vec<Message>) {
         .unwrap();
 
     dbg!(res_raw.text().await.unwrap());
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn tests_call_to_openai() {
+        let message = Message {
+            role: "user".to_string(),
+            content: "Hi there, this is a test. Give me a short response.".to_string()
+        };
+
+        let messages: Vec<Message> = vec![message];
+
+        call_gpt(messages).await;
+    }
 }
