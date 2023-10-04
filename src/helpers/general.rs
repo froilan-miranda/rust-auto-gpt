@@ -3,6 +3,11 @@ use crate::models::general::llm::Message;
 use crate::helpers::command_line::PrintCommand;
 use reqwest::Client;
 use serde::de::DeserializeOwned;
+use std::fs;
+
+const CODE_TEMPLATE_PATH: &str = "/Users/froilanmiranda/Documents/projects/dev-box/rust-simple-web-server/web-server/src/code_template.rs";
+const EXEC_MAIN_PATH: &str = "/Users/froilanmiranda/Documents/projects/dev-box/rust-simple-web-server/web-server/src/main.rs";
+const API_SCEMA_PATH: &str = "/Users/froilanmiranda/Documents/projects/dev-box/rust-autogpt/auto_gpt/schema/api_schema.json";
 
 // Extend ai function to encurage specific output
 pub fn extend_ai_function(ai_func: fn(&str) -> &'static str, func_input: &str) -> Message {
@@ -62,6 +67,24 @@ pub async fn ai_task_request_decoded<T: DeserializeOwned>(
 pub async fn check_status_code(client: &Client, url: &str) -> Result<u16, reqwest::Error>{
     let response: reqwest::Response = client.get(url).send().await?;
     Ok(response.status().as_u16())
+}
+
+// Get Code Template
+pub fn read_code_template_content() -> String {
+    let path: String = String::from(CODE_TEMPLATE_PATH);
+    fs::read_to_string(path).expect("Failed to read code template")
+}
+
+// Save new backend Code
+pub fn save_backend_code(contents: &str) {
+    let path: String = String::from(EXEC_MAIN_PATH);
+    fs::write(path, contents).expect("Failed to write main.rs file");
+}
+
+// Save JSON API Endpoint Schema
+pub fn save_api_endpoints(api_endpoints: &str) {
+    let path: String = String::from(API_SCEMA_PATH);
+    fs::write(path, api_endpoints).expect("Failed to write api_schema.json file");
 }
 
 #[cfg(test)]
