@@ -5,6 +5,7 @@ macro_rules! get_function_string{
     }
 }
 
+#[macro_use]
 mod ai_functions;
 mod apis;
 mod helpers;
