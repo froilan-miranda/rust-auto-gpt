@@ -35,5 +35,5 @@ pub trait SpecialFunctions: Debug {
     fn get_attributes_from_agent(&self) -> &BasicAgent;
 
     // this function which will allow aents to execute their logic
-    async fn ececute(&mut self, factsheet: &mut FactSheet) -> Result<(), Box<dyn std::error::Error>>;
+    async fn execute(&mut self, factsheet: &mut FactSheet) -> Result<(), Box<dyn std::error::Error>>;
 }
