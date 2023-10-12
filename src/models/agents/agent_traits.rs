@@ -16,7 +16,7 @@ pub struct RouteObject {
 #[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq)]
 pub struct ProjectScope {
     pub is_crud_required: bool,
-    pub is_user_login_logout: bool,
+    pub is_user_login_and_logout: bool,
     pub is_external_urls_required: bool,
 }
 

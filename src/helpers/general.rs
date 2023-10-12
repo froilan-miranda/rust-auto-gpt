@@ -55,9 +55,8 @@ pub async fn ai_task_request_decoded<T: DeserializeOwned>(
     agent_operation: &str,
     function_pass: for<'a> fn(&'a str) -> &'static str,
 ) -> T {
-    let ll_response: String = ai_task_request(msg_context, agent_position, agent_operation, function_pass).await;
-
-    let decoded_response: T = serde_json::from_str(&ll_response)
+    let llm_response: String = ai_task_request(msg_context, agent_position, agent_operation, function_pass).await;
+    let decoded_response: T = serde_json::from_str(llm_response.as_str())
         .expect("Failed to decode ai response from serde_json");
 
     return decoded_response;
