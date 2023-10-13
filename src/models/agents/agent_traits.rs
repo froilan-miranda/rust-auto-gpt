@@ -3,7 +3,6 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 
-
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct RouteObject {
     pub is_route_dynamic: String,
@@ -35,5 +34,8 @@ pub trait SpecialFunctions: Debug {
     fn get_attributes_from_agent(&self) -> &BasicAgent;
 
     // this function which will allow aents to execute their logic
-    async fn execute(&mut self, factsheet: &mut FactSheet) -> Result<(), Box<dyn std::error::Error>>;
+    async fn execute(
+        &mut self,
+        factsheet: &mut FactSheet,
+    ) -> Result<(), Box<dyn std::error::Error>>;
 }

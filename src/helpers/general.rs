@@ -1,13 +1,14 @@
 use crate::apis::call_request::call_gpt;
-use crate::models::general::llm::Message;
 use crate::helpers::command_line::PrintCommand;
+use crate::models::general::llm::Message;
 use reqwest::Client;
 use serde::de::DeserializeOwned;
 use std::fs;
 
 const CODE_TEMPLATE_PATH: &str = "/Users/froilanmiranda/Documents/projects/dev-box/rust-simple-web-server/web-server/src/code_template.rs";
 const EXEC_MAIN_PATH: &str = "/Users/froilanmiranda/Documents/projects/dev-box/rust-simple-web-server/web-server/src/main.rs";
-const API_SCEMA_PATH: &str = "/Users/froilanmiranda/Documents/projects/dev-box/rust-autogpt/auto_gpt/schema/api_schema.json";
+const API_SCEMA_PATH: &str =
+    "/Users/froilanmiranda/Documents/projects/dev-box/rust-autogpt/auto_gpt/schema/api_schema.json";
 
 // Extend ai function to encurage specific output
 pub fn extend_ai_function(ai_func: fn(&str) -> &'static str, func_input: &str) -> Message {
@@ -19,7 +20,7 @@ pub fn extend_ai_function(ai_func: fn(&str) -> &'static str, func_input: &str) -
     // Return message
     Message {
         role: "system".to_string(),
-        content: msg
+        content: msg,
     }
 }
 
@@ -37,14 +38,15 @@ pub async fn ai_task_request(
     PrintCommand::AICall.print_agent_message(agent_position, agent_operation);
 
     // Get LLM response
-    let llm_response_res: Result<String, Box<dyn std::error::Error + Send>> = call_gpt(vec!(extended_msg.clone())).await;
-    
+    let llm_response_res: Result<String, Box<dyn std::error::Error + Send>> =
+        call_gpt(vec![extended_msg.clone()]).await;
+
     // Return success or try again
     match llm_response_res {
         Ok(llm_resp) => llm_resp,
-        Err(_) => call_gpt(vec!(extended_msg.clone()))
+        Err(_) => call_gpt(vec![extended_msg.clone()])
             .await
-            .expect("failed twice to call llm model")
+            .expect("failed twice to call llm model"),
     }
 }
 
@@ -55,7 +57,8 @@ pub async fn ai_task_request_decoded<T: DeserializeOwned>(
     agent_operation: &str,
     function_pass: for<'a> fn(&'a str) -> &'static str,
 ) -> T {
-    let llm_response: String = ai_task_request(msg_context, agent_position, agent_operation, function_pass).await;
+    let llm_response: String =
+        ai_task_request(msg_context, agent_position, agent_operation, function_pass).await;
     let decoded_response: T = serde_json::from_str(llm_response.as_str())
         .expect("Failed to decode ai response from serde_json");
 
@@ -63,7 +66,7 @@ pub async fn ai_task_request_decoded<T: DeserializeOwned>(
 }
 
 // Check whether request url is valid
-pub async fn check_status_code(client: &Client, url: &str) -> Result<u16, reqwest::Error>{
+pub async fn check_status_code(client: &Client, url: &str) -> Result<u16, reqwest::Error> {
     let response: reqwest::Response = client.get(url).send().await?;
     Ok(response.status().as_u16())
 }
@@ -105,13 +108,15 @@ mod tests {
 
     #[tokio::test]
     async fn tests_ai_task_request() {
-        let ai_funct_param: String = "Build me a webserver for making stock price api requests.".to_string();
+        let ai_funct_param: String =
+            "Build me a webserver for making stock price api requests.".to_string();
         let res = ai_task_request(
-           ai_funct_param, 
-           "Managing Agent",
-           "Defining user requirements",
-           convert_user_input_to_goal
-        ).await; 
+            ai_funct_param,
+            "Managing Agent",
+            "Defining user requirements",
+            convert_user_input_to_goal,
+        )
+        .await;
 
         assert!(res.len() > 20);
     }

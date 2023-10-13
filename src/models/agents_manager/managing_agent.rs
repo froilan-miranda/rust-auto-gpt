@@ -1,4 +1,4 @@
-use crate::models::agent_basic::basic_agent::{ AgentState, BasicAgent };
+use crate::models::agent_basic::basic_agent::{AgentState, BasicAgent};
 use crate::models::agents::agent_traits::{FactSheet, SpecialFunctions};
 
 use crate::ai_functions::aifunc_managing::convert_user_input_to_goal;
@@ -10,7 +10,7 @@ use crate::models::general::llm::Message;
 pub struct ManagingAgent {
     attributes: BasicAgent,
     factsheet: FactSheet,
-    agents: Vec<Box<dyn SpecialFunctions>>
+    agents: Vec<Box<dyn SpecialFunctions>>,
 }
 
 impl ManagingAgent {
@@ -18,19 +18,20 @@ impl ManagingAgent {
         let position = "Prject Manager".to_string();
 
         let attributes = BasicAgent {
-           objective: "Manage agents who are building an excellent website for the user".to_string(),
-           position: position.clone(),
-           state: AgentState::Discovery,
-           memory: vec![]
+            objective: "Manage agents who are building an excellent website for the user"
+                .to_string(),
+            position: position.clone(),
+            state: AgentState::Discovery,
+            memory: vec![],
         };
 
-        
         let project_description: String = ai_task_request(
-           usr_req,
-           &position,
-           get_function_string!(convert_user_input_to_goal), 
-           convert_user_input_to_goal,
-        ).await;
+            usr_req,
+            &position,
+            get_function_string!(convert_user_input_to_goal),
+            convert_user_input_to_goal,
+        )
+        .await;
 
         let agents: Vec<Box<dyn SpecialFunctions>> = vec![];
 
@@ -45,15 +46,15 @@ impl ManagingAgent {
         Ok(Self {
             attributes,
             factsheet,
-            agents
+            agents,
         })
     }
 
     fn add_agent(&mut self, agent: Box<dyn SpecialFunctions>) {
-        self.agents.push(agent);  
+        self.agents.push(agent);
     }
 
-    fn create_agents(&mut self){
+    fn create_agents(&mut self) {
         self.add_agent(Box::new(AgentSolutionsArchitect::new()));
         // ! TODO: add more agents
     }
@@ -62,8 +63,8 @@ impl ManagingAgent {
         self.create_agents();
 
         for agent in &mut self.agents {
-            let agent_res: Result<(), Box<dyn std::error::Error>> = 
-                agent.execute(&mut self.factsheet).await; 
+            let agent_res: Result<(), Box<dyn std::error::Error>> =
+                agent.execute(&mut self.factsheet).await;
 
             let agent_info = agent.get_attributes_from_agent();
             dbg!(agent_info);
@@ -79,7 +80,9 @@ mod tests {
     async fn tests_managing_agent() {
         let usr_req: &str = "need a full stack app that fetches and tracks my fitness progress. Needs to include timezone info from the web.";
 
-        let mut managing_agent: ManagingAgent = ManagingAgent::new(usr_req.to_string()).await.expect("Error creating managing agent");
+        let mut managing_agent: ManagingAgent = ManagingAgent::new(usr_req.to_string())
+            .await
+            .expect("Error creating managing agent");
 
         managing_agent.execute_project().await;
 
