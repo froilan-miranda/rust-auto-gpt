@@ -68,6 +68,12 @@ pub async fn check_status_code(client: &Client, url: &str) -> Result<u16, reqwes
     Ok(response.status().as_u16())
 }
 
+// Get Exec Code
+pub fn read_exec_main_content() -> String {
+    let path: String = String::from(EXEC_MAIN_PATH);
+    fs::read_to_string(path).expect("Failed to read code template")
+}
+
 // Get Code Template
 pub fn read_code_template_content() -> String {
     let path: String = String::from(CODE_TEMPLATE_PATH);
