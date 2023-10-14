@@ -155,3 +155,36 @@ impl SpecialFunctions for AgentBackendDeveloper {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn tests_writeing_backend_code() {
+        let mut agent: AgentBackendDeveloper = AgentBackendDeveloper::new();
+        let factsheet_str: &str = r#"
+            {
+                "project_description": "build a website that fetches and tracks fitness progress with timezone information from the web.",
+                "project_scope": {
+                    "is_crud_required": true,
+                    "is_user_login_and_logout": true,
+                    "is_external_urls_required": true
+                },
+                "external_urls": [
+                    "https://wger.de/api/v2/exercise/",
+                    "http://worldtimeapi.org/api/timezone/"
+                ],
+                "backend_code": null,
+                "api_endpoint_schema": null
+            }"#;
+
+        let mut factsheet: FactSheet = serde_json::from_str(factsheet_str).unwrap();
+
+        // dbg!(&factsheet);
+        agent
+            .execute(&mut factsheet)
+            .await
+            .expect("Failed to execute backend developer agent");
+    }
+}

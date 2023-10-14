@@ -5,8 +5,10 @@ use reqwest::Client;
 use serde::de::DeserializeOwned;
 use std::fs;
 
-const CODE_TEMPLATE_PATH: &str = "/Users/froilanmiranda/Documents/projects/dev-box/rust-simple-web-server/web-server/src/code_template.rs";
-const EXEC_MAIN_PATH: &str = "/Users/froilanmiranda/Documents/projects/dev-box/rust-simple-web-server/web-server/src/main.rs";
+const CODE_TEMPLATE_PATH: &str =
+    "/Users/froilanmiranda/git-repositories/dev-box/rust-autogpt/web-template/src/code_template.rs";
+const EXEC_MAIN_PATH: &str =
+    "/Users/froilanmiranda/git-repositories/dev-box/rust-autogpt/web-template/src/main.rs";
 const API_SCEMA_PATH: &str =
     "/Users/froilanmiranda/Documents/projects/dev-box/rust-autogpt/auto_gpt/schema/api_schema.json";
 
