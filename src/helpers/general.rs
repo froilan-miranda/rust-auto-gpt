@@ -12,7 +12,7 @@ pub const EXEC_MAIN_PATH: &str =
 pub const WEB_SERVER_PROJECT_PATH: &str =
     "/Users/froilanmiranda/git-repositories/dev-box/rust-autogpt/web-template/";
 const API_SCEMA_PATH: &str =
-    "/Users/froilanmiranda/Documents/projects/dev-box/rust-autogpt/auto_gpt/schema/api_schema.json";
+    "/Users/froilanmiranda/git-repositories/dev-box/rust-autogpt/auto_gpt/schemas/api_schema.json";
 
 // Extend ai function to encurage specific output
 pub fn extend_ai_function(ai_func: fn(&str) -> &'static str, func_input: &str) -> Message {

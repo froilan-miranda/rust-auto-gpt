@@ -81,7 +81,7 @@ impl AgentBackendDeveloper {
         factsheet.backend_code = Some(ai_response);
     }
 
-    async fn call_fix__code_bugs(&mut self, factsheet: &mut FactSheet) {
+    async fn call_fix_code_bugs(&mut self, factsheet: &mut FactSheet) {
         let msg_context: String = format!(
             "BROKEN CODE: {:?} \n ERROR_BUGS {:?} \n
             THIS FUNCTION ONLY OUTPUTS CODE. JUST OUTPUT THE CODE.",
@@ -140,7 +140,7 @@ impl SpecialFunctions for AgentBackendDeveloper {
                     if self.bug_count == 0 {
                         self.call_improved_backend_code(factsheet).await;
                     } else {
-                        self.call_fix__code_bugs(factsheet).await;
+                        self.call_fix_code_bugs(factsheet).await;
                     }
                     self.attributes.state = AgentState::UnitTesting;
                     continue;
@@ -217,7 +217,7 @@ impl SpecialFunctions for AgentBackendDeveloper {
                     let check_endpoints: Vec<RouteObject> = api_endpoints
                         .iter()
                         .filter(|&route_object| {
-                            route_object.method == "GET" && route_object.is_route_dynamic == "false"
+                            route_object.method == "get" && route_object.is_route_dynamic == "false"
                         })
                         .cloned()
                         .collect();
@@ -296,7 +296,7 @@ impl SpecialFunctions for AgentBackendDeveloper {
 
                     save_api_endpoints(&api_endpoints_str);
 
-                    PrintCommand::Issue.print_agent_message(
+                    PrintCommand::UnitTest.print_agent_message(
                         self.attributes.position.as_str(),
                         "Backend testing complete...",
                     );
@@ -320,7 +320,7 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn tests_writeing_backend_code() {
+    async fn tests_backend_developer() {
         let mut agent: AgentBackendDeveloper = AgentBackendDeveloper::new();
         let factsheet_str: &str = r#"
             {
@@ -341,6 +341,8 @@ mod tests {
         let mut factsheet: FactSheet = serde_json::from_str(factsheet_str).unwrap();
 
         // dbg!(&factsheet);
+
+        agent.attributes.state = AgentState::UnitTesting;
         agent
             .execute(&mut factsheet)
             .await
