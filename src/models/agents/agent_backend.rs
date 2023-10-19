@@ -232,12 +232,12 @@ impl SpecialFunctions for AgentBackendDeveloper {
                     );
 
                     // Execute running server
-                    let run_backend_server: std::process::Output = Command::new("cargo")
+                    let mut run_backend_server: std::process::Child = Command::new("cargo")
                         .arg("run")
                         .current_dir(WEB_SERVER_PROJECT_PATH)
                         .stdout(Stdio::piped())
                         .stderr(Stdio::piped())
-                        .output()
+                        .spawn()
                         .expect("Faild to run backend application");
 
                     // Let user know testing on server will take place soon
@@ -248,6 +248,62 @@ impl SpecialFunctions for AgentBackendDeveloper {
 
                     let seconds_sleep: Duration = Duration::from_secs(5);
                     time::sleep(seconds_sleep).await;
+
+                    // Check status code
+                    for endpoint in check_endpoints {
+                        // Confirm url testing
+                        let testing_message: String =
+                            format!("Testing endpoint '{}'...", endpoint.route);
+                        PrintCommand::Issue.print_agent_message(
+                            self.attributes.position.as_str(),
+                            testing_message.as_str(),
+                        );
+
+                        // Create client with timeout
+                        let client: Client = Client::builder()
+                            .timeout(Duration::from_secs(5))
+                            .build()
+                            .unwrap();
+
+                        // Test url
+                        let url: String = format!("http://localhost:8080{}", endpoint.route);
+                        match check_status_code(&client, &url).await {
+                            Ok(status_code) => {
+                                if status_code != 200 {
+                                    let err_msg: String = format!(
+                                        "Warning: Failed to call backend url endpoint {}",
+                                        endpoint.route
+                                    );
+                                    PrintCommand::Issue.print_agent_message(
+                                        self.attributes.position.as_str(),
+                                        err_msg.as_str(),
+                                    );
+                                }
+                            }
+                            Err(e) => {
+                                // kill $(lsof -t -i:8080)
+                                run_backend_server
+                                    .kill()
+                                    .expect("Failed to kill backend web server");
+                                let err_msg: String = format!("Error checking backend {}", e);
+                                PrintCommand::Issue.print_agent_message(
+                                    self.attributes.position.as_str(),
+                                    err_msg.as_str(),
+                                );
+                            }
+                        }
+                    }
+
+                    save_api_endpoints(&api_endpoints_str);
+
+                    PrintCommand::Issue.print_agent_message(
+                        self.attributes.position.as_str(),
+                        "Backend testing complete...",
+                    );
+
+                    run_backend_server
+                        .kill()
+                        .expect("Failed to kill backend web server on completion");
 
                     self.attributes.state = AgentState::Finished;
                 }
